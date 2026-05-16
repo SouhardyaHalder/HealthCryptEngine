@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>View Record</title>
+    <link rel="stylesheet" th:href="@{/css/medical.css}"/>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">Health<span>Crypt</span> Engine</div>
+    <div class="nav-links">
+        <a href="/medical" class="nav-back">← Back to Medical</a>
+        <form action="/login" method="get" style="display:inline;">
+            <button type="submit" class="btn-logout">⏻ Logout</button>
+        </form>
+    </div>
+</nav>
+
+<div class="main">
+    <div class="page-header">
+        <div>
+            <p class="welcome-text">🧾 Patient Record</p>
+            <p class="welcome-sub" th:text="${record.patientName}"></p>
+        </div>
+        <a th:href="@{/medical/delete/{id}(id=${record.id})}" class="btn-delete-large">🗑 Delete Record</a>
+    </div>
+
+    <div class="view-card">
+
+        <div class="view-grid">
+
+            <div class="view-field">
+                <div class="view-label">👤 Patient Name</div>
+                <div class="view-value" th:text="${record.patientName}"></div>
+            </div>
+
+            <div class="view-field">
+                <div class="view-label">🎂 Age</div>
+                <div class="view-value" th:text="${record.age}"></div>
+            </div>
+
+            <div class="view-field">
+                <div class="view-label">🩸 Blood Group</div>
+                <div class="view-value" th:text="${record.bloodGroup}"></div>
+            </div>
+
+            <div class="view-field">
+                <div class="view-label">👨‍⚕️ Doctor Name</div>
+                <div class="view-value" th:text="${record.doctorName}"></div>
+            </div>
+
+            <div class="view-field">
+                <div class="view-label">📅 Date of Visit</div>
+                <div class="view-value" th:text="${record.dateOfVisit}"></div>
+            </div>
+
+            <div class="view-field">
+                <div class="view-label">🔬 Diagnosis</div>
+                <div class="view-value" th:text="${record.diagnosis}"></div>
+            </div>
+
+            <div class="view-field full-width">
+                <div class="view-label">💊 Prescription / Medicines</div>
+                <div class="view-value prescription-box" th:text="${record.prescription}"></div>
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+            <a href="/medical" class="btn-cancel">← Back to Records</a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

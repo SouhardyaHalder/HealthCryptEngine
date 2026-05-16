@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" th:href="@{/css/home.css}"/>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">Health<span>Crypt</span> Engine</div>
+    <form action="/login" method="get">
+        <button type="submit" class="btn-logout">⏻ Logout</button>
+    </form>
+</nav>
+
+<div class="main">
+    <p class="welcome-text">Welcome Back 👋</p>
+    <p class="welcome-sub">What would you like to do today?</p>
+
+    <div class="grid">
+
+        <a href="/medical" class="module-card">
+            <div class="module-icon">🏥</div>
+            <div class="module-title">Medical Records</div>
+            <div class="module-desc">View and manage your encrypted medical data, reports and history.</div>
+            <div class="module-arrow">Open Module →</div>
+        </a>
+
+        <a href="#" class="module-card">
+            <div class="module-icon">⏱️</div>
+            <div class="module-title">Pomodoro Timer</div>
+            <div class="module-desc">Stay focused with timed work sessions and scheduled breaks.</div>
+            <div class="module-arrow">Open Module →</div>
+        </a>
+
+        <a href="#" class="module-card">
+            <div class="module-icon">🎬</div>
+            <div class="module-title">Streaming</div>
+            <div class="module-desc">Access your media and streaming content in one place.</div>
+            <div class="module-arrow">Open Module →</div>
+        </a>
+
+        <a href="#" class="module-card">
+            <div class="module-icon">📦</div>
+            <div class="module-title">Module 4</div>
+            <div class="module-desc">Your custom module — coming soon.</div>
+            <div class="module-arrow">Open Module →</div>
+        </a>
+
+        <a href="#" class="module-card">
+            <div class="module-icon">📊</div>
+            <div class="module-title">Module 5</div>
+            <div class="module-desc">Your custom module — coming soon.</div>
+            <div class="module-arrow">Open Module →</div>
+        </a>
+
+        <a href="#" class="module-card">
+            <div class="module-icon">⚙️</div>
+            <div class="module-title">Module 6</div>
+            <div class="module-desc">Your custom module — coming soon.</div>
+            <div class="module-arrow">Open Module →</div>
+        </a>
+
+    </div>
+</div>
+
+</body>
+</html>
