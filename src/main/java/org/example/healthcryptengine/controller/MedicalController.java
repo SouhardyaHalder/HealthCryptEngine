@@ -1,6 +1,8 @@
 package org.example.healthcryptengine.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.example.healthcryptengine.model.MedicalRecord;
+import org.example.healthcryptengine.model.User;
 import org.example.healthcryptengine.repository.MedicalRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,8 +21,9 @@ public class MedicalController {
     @Autowired
     private MedicalRecordRepository medicalRecordRepository;
     @GetMapping("/medical")
-    public String showMedicalPage(Model model) {
-        List<MedicalRecord>records = medicalRecordRepository.findAll();
+    public String showMedicalPage(Model model, HttpSession session) {
+        User loggedInUser = (User)session.getAttribute("loggedInUser");
+        List<MedicalRecord>records = medicalRecordRepository.findByUserId(loggedInUser.getId());
         model.addAttribute("records", records);
         model.addAttribute("totalRecords", records.size());
         return "medical";

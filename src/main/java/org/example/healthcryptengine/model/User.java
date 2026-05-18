@@ -15,6 +15,9 @@ public class User {
     private String username;
     private String password;
 
+    public Long getId(){
+        return this.id;
+    }
     // getters & setters
     public String getUsername() {
         return username;

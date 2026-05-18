@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Pomodoro Timer</title>
+    <link rel="stylesheet" th:href="@{/css/pomodoro.css}"/>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">Health<span>Crypt</span> Engine</div>
+    <div class="nav-links">
+        <a href="/home" class="nav-back">← Back to Home</a>
+        <form action="/logout" method="get" style="display:inline;">
+            <button type="submit" class="btn-logout">⏻ Logout</button>
+        </form>
+    </div>
+</nav>
+
+<div class="main">
+
+    <!-- MODE TABS -->
+    <div class="mode-tabs">
+        <button class="tab active" onclick="setMode('pomodoro')">Pomodoro</button>
+        <button class="tab" onclick="setMode('short')">Short Break</button>
+        <button class="tab" onclick="setMode('long')">Long Break</button>
+    </div>
+
+    <!-- TIMER CARD -->
+    <div class="timer-card">
+        <div class="timer-display" id="timerDisplay">25:00</div>
+        <div class="timer-label" id="timerLabel">Focus Time</div>
+
+        <div class="timer-controls">
+            <button class="btn-control" onclick="resetTimer()">↺ Reset</button>
+            <button class="btn-start" id="startBtn" onclick="toggleTimer()">▶ Start</button>
+            <button class="btn-control" onclick="skipSession()">⏭ Skip</button>
+        </div>
+    </div>
+
+    <!-- SESSION INFO -->
+    <div class="session-row">
+        <div class="session-card">
+            <div class="session-number" id="sessionCount">0</div>
+            <div class="session-label">Sessions Done</div>
+        </div>
+        <div class="session-card">
+            <div class="session-number" id="totalFocus">0 min</div>
+            <div class="session-label">Total Focus Time</div>
+        </div>
+        <div class="session-card">
+            <div class="session-number" id="currentStreak">0</div>
+            <div class="session-label">Current Streak</div>
+        </div>
+    </div>
+
+    <!-- TASK FOR THIS SESSION -->
+    <div class="task-card">
+        <h3>🎯 What are you working on?</h3>
+        <div class="task-input-row">
+            <input type="text" id="taskInput" placeholder="Enter your task..."/>
+            <button onclick="setTask()">Set</button>
+        </div>
+        <div class="current-task" id="currentTask">No task set</div>
+    </div>
+
+</div>
+
+<script>
+    // MODES
+    const modes = {
+        pomodoro: { time: 25 * 60, label: "Focus Time" },
+        short:    { time: 5  * 60, label: "Short Break" },
+        long:     { time: 15 * 60, label: "Long Break"  }
+    };
+
+    let currentMode = 'pomodoro';
+    let timeLeft = modes.pomodoro.time;
+    let isRunning = false;
+    let interval = null;
+    let sessionCount = 0;
+    let totalFocusSeconds = 0;
+
+    function setMode(mode) {
+        currentMode = mode;
+        timeLeft = modes[mode].time;
+        isRunning = false;
+        clearInterval(interval);
+        document.getElementById('startBtn').textContent = '▶ Start';
+        document.getElementById('timerLabel').textContent = modes[mode].label;
+        updateDisplay();
+
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    function toggleTimer() {
+        if (isRunning) {
+            clearInterval(interval);
+            isRunning = false;
+            document.getElementById('startBtn').textContent = '▶ Start';
+        } else {
+            isRunning = true;
+            document.getElementById('startBtn').textContent = '⏸ Pause';
+            interval = setInterval(() => {
+                timeLeft--;
+                if (currentMode === 'pomodoro') totalFocusSeconds++;
+                updateDisplay();
+                updateStats();
+
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    isRunning = false;
+                    document.getElementById('startBtn').textContent = '▶ Start';
+                    if (currentMode === 'pomodoro') {
+                        sessionCount++;
+                        document.getElementById('sessionCount').textContent = sessionCount;
+                    }
+                    playBeep();
+                    alert(currentMode === 'pomodoro' ? '✅ Session complete! Take a break.' : '⏰ Break over! Back to work.');
+                }
+            }, 1000);
+        }
+    }
+
+    function resetTimer() {
+        clearInterval(interval);
+        isRunning = false;
+        timeLeft = modes[currentMode].time;
+        document.getElementById('startBtn').textContent = '▶ Start';
+        updateDisplay();
+    }
+
+    function skipSession() {
+        clearInterval(interval);
+        isRunning = false;
+        timeLeft = 0;
+        document.getElementById('startBtn').textContent = '▶ Start';
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+        const secs = String(timeLeft % 60).padStart(2, '0');
+        document.getElementById('timerDisplay').textContent = `${mins}:${secs}`;
+        document.title = `${mins}:${secs} — Pomodoro`;
+    }
+
+    function updateStats() {
+        const mins = Math.floor(totalFocusSeconds / 60);
+        document.getElementById('totalFocus').textContent = `${mins} min`;
+        document.getElementById('currentStreak').textContent = sessionCount;
+    }
+
+    function setTask() {
+        const task = document.getElementById('taskInput').value;
+        if (task.trim()) {
+            document.getElementById('currentTask').textContent = '📌 ' + task;
+        }
+    }
+
+    function playBeep() {
+        const ctx = new AudioContext();
+        const oscillator = ctx.createOscillator();
+        oscillator.connect(ctx.destination);
+        oscillator.frequency.value = 440;
+        oscillator.start();
+        oscillator.stop(ctx.currentTime + 0.5);
+    }
+</script>
+
+</body>
+</html>

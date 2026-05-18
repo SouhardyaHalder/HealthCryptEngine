@@ -1,5 +1,6 @@
 package org.example.healthcryptengine.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.example.healthcryptengine.model.User;
 import org.example.healthcryptengine.repository.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String handleLogin(@RequestParam String username , @RequestParam String password, Model model){
+    public String handleLogin(@RequestParam String username , @RequestParam String password, Model model, HttpSession session){
         User user = userRepository.findByUsername(username);
 
         if(user == null){
@@ -31,6 +32,8 @@ public class LoginController {
             model.addAttribute("error", "Incorrect Password");
             return "login";
         }
+
+        session.setAttribute("loggedInUser",user);
         return "redirect:/home";
     }
 
@@ -62,5 +65,10 @@ public class LoginController {
     @GetMapping("/home")
     public String showHomePage() {
         return "home";
+    }
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // ✅ clears all session data
+        return "redirect:/login";
     }
 }
