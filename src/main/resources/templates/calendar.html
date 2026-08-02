@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Focus Calendar</title>
+  <link rel="stylesheet" th:href="@{/css/pomodoro.css}"/>
+  <style>
+    .cal-wrapper {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .cal-month-header {
+      text-align: center;
+      color: #5b21b6;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .cal-weekday {
+      text-align: center;
+      color: #a855f7;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px;
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+    .cal-day {
+      background: rgba(255,255,255,0.45);
+      border: 1px solid rgba(180,130,220,0.2);
+      border-radius: 12px;
+      padding: 10px 6px;
+      text-align: center;
+      min-height: 72px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .cal-day.empty {
+      background: transparent;
+      border: none;
+    }
+    .cal-day.today {
+      border: 2px solid #a855f7;
+      background: rgba(168,85,247,0.08);
+    }
+    .cal-day.has-focus {
+      background: rgba(168,85,247,0.2);
+      border-color: #7c3aed;
+    }
+    .cal-date {
+      color: #7c3aed;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .cal-day.today .cal-date {
+      background: #a855f7;
+      color: white;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cal-mins {
+      color: #5b21b6;
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    .cal-label {
+      color: #a855f7;
+      font-size: 9px;
+    }
+    .legend {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #7c3aed;
+    }
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="navbar-brand">Health<span>Crypt</span> Engine</div>
+    <div class="nav-links">
+      <a href="/pomodoro" class="nav-back">← Back to Pomodoro</a>
+      <form action="/logout" method="get" style="display:inline;">
+        <button type="submit" class="btn-logout">⏻ Logout</button>
+      </form>
+    </div>
+  </nav>
+
+  <div class="main">
+    <p class="welcome-text">📅 Focus Calendar</p>
+    <p class="welcome-sub">Your daily Pomodoro focus time — last 30 days</p>
+
+    <div class="cal-wrapper">
+      <div class="cal-month-header" th:text="${monthLabel}"></div>
+
+      <!-- Weekday headers -->
+      <div class="cal-weekdays">
+        <div class="cal-weekday">Sun</div>
+        <div class="cal-weekday">Mon</div>
+        <div class="cal-weekday">Tue</div>
+        <div class="cal-weekday">Wed</div>
+        <div class="cal-weekday">Thu</div>
+        <div class="cal-weekday">Fri</div>
+        <div class="cal-weekday">Sat</div>
+      </div>
+
+      <!-- Calendar grid -->
+      <div class="cal-grid">
+        <div th:each="cell : ${calendarCells}"
+             th:classappend="${cell.empty} ? 'empty' : (${cell.today} ? 'today' : '') + ' ' + (${cell.focusMins > 0} ? 'has-focus' : '')"
+             class="cal-day">
+          <div th:if="${!cell.empty}">
+            <div class="cal-date" th:text="${cell.day}"></div>
+            <div th:if="${cell.focusMins > 0}">
+              <div class="cal-mins" th:text="${cell.focusMins}"></div>
+              <div class="cal-label">mins</div>
+            </div>
+            <div th:if="${cell.focusMins == 0}" style="color:#ccc; font-size:11px; margin-top:4px;">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend">
+        <span><span class="legend-dot" style="background:rgba(168,85,247,0.2); border:1px solid #7c3aed;"></span>Has focus session</span>
+        <span><span class="legend-dot" style="background:rgba(168,85,247,0.08); border:2px solid #a855f7;"></span>Today</span>
+        <span><span class="legend-dot" style="background:rgba(255,255,255,0.45); border:1px solid rgba(180,130,220,0.2);"></span>No session</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

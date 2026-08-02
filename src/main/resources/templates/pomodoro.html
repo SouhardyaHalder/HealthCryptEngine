@@ -24,16 +24,33 @@
         <button class="tab" onclick="setMode('short')">Short Break</button>
         <button class="tab" onclick="setMode('long')">Long Break</button>
     </div>
-
+    <!-- Google Calendar Connect -->
+    <div class="gcal-bar">
+        <a th:if="${googleConnected == null}" href="/google/auth" class="btn-gcal">
+            📅 Connect Google Calendar
+        </a>
+        <span th:if="${googleConnected != null}" class="gcal-connected">
+            ✅ Google Calendar Connected — <a href="/calendar">View My Focus Calendar</a>
+        </span>
+    </div>
+        
     <!-- TIMER CARD -->
     <div class="timer-card">
-        <div class="timer-display" id="timerDisplay">25:00</div>
         <div class="timer-label" id="timerLabel">Focus Time</div>
+
+        <div class="timer-scroll-row">
+            <div class="scroll-unit">
+                <div class="timer-display" id="minsDisplay">25</div>
+            </div>
+            <div class="timer-colon">:</div>
+            <div class="scroll-unit">
+                <div class="timer-display" id="secsDisplay">00</div>
+            </div>
+        </div>
 
         <div class="timer-controls">
             <button class="btn-control" onclick="resetTimer()">↺ Reset</button>
             <button class="btn-start" id="startBtn" onclick="toggleTimer()">▶ Start</button>
-            <button class="btn-control" onclick="skipSession()">⏭ Skip</button>
         </div>
     </div>
 
@@ -80,6 +97,47 @@
     let sessionCount = 0;
     let totalFocusSeconds = 0;
 
+    // ✅ Mouse scroll on mins
+    document.getElementById('minsDisplay').addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (isRunning) return;
+        adjustDisplay(e.deltaY < 0 ? 1 : -1, 'mins');
+    });
+
+    // ✅ Mouse scroll on secs
+    document.getElementById('secsDisplay').addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (isRunning) return;
+        adjustDisplay(e.deltaY < 0 ? 1 : -1, 'secs');
+    });
+
+
+
+    function adjustDisplay(delta, unit) {
+        if (isRunning) return; // cant adjust while running
+
+        let mins = parseInt(document.getElementById('minsDisplay').textContent);
+        let secs = parseInt(document.getElementById('secsDisplay').textContent);
+
+        if (unit === 'mins') {
+            mins += delta;
+            if (mins < 0) mins = 99;
+            if (mins > 99) mins = 0;
+        } else {
+            secs += delta;
+            if (secs < 0) secs = 59;
+            if (secs > 59) secs = 0;
+        }
+
+        document.getElementById('minsDisplay').textContent = String(mins).padStart(2, '0');
+        document.getElementById('secsDisplay').textContent = String(secs).padStart(2, '0');
+
+        // ✅ Save to current mode so reset comes back to this
+        timeLeft = mins * 60 + secs;
+        modes[currentMode].mins = mins;
+        modes[currentMode].secs = secs;
+    }
+
     function setMode(mode) {
         currentMode = mode;
         timeLeft = modes[mode].time;
@@ -102,11 +160,6 @@
             isRunning = true;
             document.getElementById('startBtn').textContent = '⏸ Pause';
             interval = setInterval(() => {
-                timeLeft--;
-                if (currentMode === 'pomodoro') totalFocusSeconds++;
-                updateDisplay();
-                updateStats();
-
                 if (timeLeft <= 0) {
                     clearInterval(interval);
                     isRunning = false;
@@ -114,10 +167,19 @@
                     if (currentMode === 'pomodoro') {
                         sessionCount++;
                         document.getElementById('sessionCount').textContent = sessionCount;
+                         // ✅ Log to Google Calendar
+                        const duration = modes[currentMode].mins;
+                        fetch(`/pomodoro/log?duration=${duration}`);
                     }
                     playBeep();
                     alert(currentMode === 'pomodoro' ? '✅ Session complete! Take a break.' : '⏰ Break over! Back to work.');
+                    resetTimer();
+                    return;
                 }
+                timeLeft--;
+                if (currentMode === 'pomodoro') totalFocusSeconds++;
+                updateDisplay();
+                updateStats();
             }, 1000);
         }
     }
@@ -125,23 +187,25 @@
     function resetTimer() {
         clearInterval(interval);
         isRunning = false;
-        timeLeft = modes[currentMode].time;
+        // ✅ Always resets to whatever user set, not hardcoded 25
+        timeLeft = modes[currentMode].mins * 60 + modes[currentMode].secs;
         document.getElementById('startBtn').textContent = '▶ Start';
         updateDisplay();
     }
 
-    function skipSession() {
-        clearInterval(interval);
-        isRunning = false;
-        timeLeft = 0;
-        document.getElementById('startBtn').textContent = '▶ Start';
-        updateDisplay();
-    }
+    // function skipSession() {
+    //     clearInterval(interval);
+    //     isRunning = false;
+    //     timeLeft = 0;
+    //     document.getElementById('startBtn').textContent = '▶ Start';
+    //     updateDisplay();
+    // }
 
     function updateDisplay() {
         const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
         const secs = String(timeLeft % 60).padStart(2, '0');
-        document.getElementById('timerDisplay').textContent = `${mins}:${secs}`;
+        document.getElementById('minsDisplay').textContent = mins;
+        document.getElementById('secsDisplay').textContent = secs;
         document.title = `${mins}:${secs} — Pomodoro`;
     }
 

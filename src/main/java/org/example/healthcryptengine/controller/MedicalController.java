@@ -41,7 +41,8 @@ public class MedicalController {
             @RequestParam String doctorName,
             @RequestParam String diagnosis,
             @RequestParam String prescription,
-            @RequestParam String dateOfVisit) {
+            @RequestParam String dateOfVisit,
+            HttpSession session) {
 
         MedicalRecord record = new MedicalRecord();
         record.setPatientName(patientName);
@@ -52,6 +53,8 @@ public class MedicalController {
         record.setPrescription(prescription);
         record.setDateOfVisit(LocalDate.parse(dateOfVisit));
 
+        User loggedInUser =(User)session.getAttribute("loggedInUser");
+        record.setId(loggedInUser.getId());
         medicalRecordRepository.save(record);
         return "redirect:/medical";
     }

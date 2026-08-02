@@ -228,3 +228,64 @@ body {
     font-size: 14px;
     font-weight: 500;
 }
+
+.timer-scroll-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 32px;
+    flex-direction: row; /* ✅ side by side */
+}
+
+.scroll-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.timer-colon {
+    font-size: 80px;
+    font-weight: 700;
+    color: #5b21b6;
+    padding-bottom: 20px; /* align with numbers */
+}
+
+
+
+
+.gcal-bar {
+    margin-bottom: 8px;
+}
+
+.btn-gcal {
+    padding: 10px 24px;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(180, 130, 220, 0.3);
+    border-radius: 20px;
+    color: #5b21b6;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.btn-gcal:hover {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.gcal-connected {
+    color: #5b21b6;
+    font-size: 14px;
+    font-weight: 600;
+    background: rgba(255,255,255,0.55);
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: 1px solid rgba(180,130,220,0.3);
+}
+
+.gcal-connected a {
+    color: #a855f7;
+    margin-left: 8px;
+}
