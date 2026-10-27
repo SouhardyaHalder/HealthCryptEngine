@@ -1,19 +1,25 @@
 package org.example.healthcryptengine.controller;
 
-import jakarta.servlet.http.HttpSession;
 import org.example.healthcryptengine.model.User;
 import org.example.healthcryptengine.repository.Repository;
+import org.example.healthcryptengine.service.GoogleCalendarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.ui.Model;
+import com.google.api.client.auth.oauth2.Credential;
+import jakarta.servlet.http.HttpSession;
+
 
 @Controller
 public class LoginController {
     @Autowired
     private Repository userRepository;
+
+    @Autowired
+    private GoogleCalendarService calendarService;
 
     @GetMapping("/login")
     public String showLoginPage() {
@@ -32,8 +38,21 @@ public class LoginController {
             model.addAttribute("error", "Incorrect Password");
             return "login";
         }
-
+        
         session.setAttribute("loggedInUser",user);
+        
+        if(user.getGoogleAccessToken() != null){
+            try{
+                Credential credential = calendarService.buildCredentialFromToken(
+                        user.getGoogleAccessToken(),
+                        user.getGoogleRefreshToken(),
+                        user.getGoogleTokenExpiry()
+                );
+                session.setAttribute("googleCredential", credential);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
         return "redirect:/home";
     }
 

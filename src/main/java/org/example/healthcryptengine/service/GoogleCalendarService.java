@@ -101,4 +101,24 @@ public class GoogleCalendarService {
 
         service.events().insert("primary", event).execute();
     }
+
+    public Credential buildCredentialFromToken(String accessToken,
+                                            String refreshToken,
+                                            Long expiry) throws Exception {
+    Credential credential = new Credential.Builder(
+        com.google.api.client.auth.oauth2.BearerToken.authorizationHeaderAccessMethod())
+        .setTransport(GoogleNetHttpTransport.newTrustedTransport())
+        .setJsonFactory(JacksonFactory.getDefaultInstance())
+        .setTokenServerUrl(new com.google.api.client.http.GenericUrl(
+            "https://oauth2.googleapis.com/token"))
+        .setClientAuthentication(
+            new com.google.api.client.auth.oauth2.ClientParametersAuthentication(
+                clientId, clientSecret))
+        .build();
+
+    credential.setAccessToken(accessToken);
+    credential.setRefreshToken(refreshToken);
+    credential.setExpirationTimeMilliseconds(expiry);
+    return credential;
+}
 }

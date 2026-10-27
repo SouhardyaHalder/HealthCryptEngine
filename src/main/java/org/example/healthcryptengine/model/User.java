@@ -1,6 +1,10 @@
 package org.example.healthcryptengine.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 
 @Entity
@@ -14,6 +18,11 @@ public class User {
 
     private String username;
     private String password;
+
+
+    private String googleAccessToken;
+    private String googleRefreshToken;
+    private Long googleTokenExpiry;
 
     public Long getId(){
         return this.id;
@@ -34,5 +43,14 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public String getGoogleAccessToken() { return googleAccessToken; }
+    public void setGoogleAccessToken(String googleAccessToken) { this.googleAccessToken = googleAccessToken; }
+
+    public String getGoogleRefreshToken() { return googleRefreshToken; }
+    public void setGoogleRefreshToken(String googleRefreshToken) { this.googleRefreshToken = googleRefreshToken; }
+
+    public Long getGoogleTokenExpiry() { return googleTokenExpiry; }
+    public void setGoogleTokenExpiry(Long googleTokenExpiry) { this.googleTokenExpiry = googleTokenExpiry; }
 
 }
